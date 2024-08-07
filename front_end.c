@@ -1,7 +1,20 @@
 #include <stdio.h>
 #include <math.h>
 #include "constants.h"
+#include "rk4.h"
+#include "derivs.h"
 
+void change_param();
+void instl_dflt_V();
+void change_param() ;
+void change_pid() ;
+void get_vel_func() ;
+void run_sim() ;
+int main_menu();
+int get_choice( int lo, int hi, int dflt );
+void calc_all_params() ;
+void integrate( double t, int n, double step1, double hmin, double eps );
+void print_header();
 
 struct	PARAMETER	{
     char	*name ;
@@ -65,7 +78,7 @@ double 	Tset 		= 0.0 ;
  * --------------------------------*/
 char  title_str[255] ;
 
-main()
+int main()
 
 {
     int choice = 0 ;
@@ -109,9 +122,7 @@ void	clear_screen()
  * This routine gets an integer between hi & lo from the keyboard.
  * If the user just hits 'return' then the default value is returned.
  * ------------------------------------------------------------------------*/
-int get_choice( lo, hi, dflt )
-
-int	lo, hi, dflt ; {
+int get_choice( int lo, int hi, int dflt ) {
     char			buf[255];
     register char	*p ;
     register int	hhi, llo ;
@@ -164,9 +175,7 @@ int	lo, hi, dflt ; {
  * value after all.
  * ------------------------------------------------------------------------*/
 
-double get_double( dflt )
-
-double dflt ; {
+double get_double( double dflt ) {
     char	buf[255], *p ;
     double	ret = 0 ;
     
@@ -228,7 +237,7 @@ int	main_menu()
  * This function allows the user to change the physical parameters of
  * the model.
  * ----------------------------------------------------------------------------*/
-change_param() {
+void change_param() {
     int i, c ;
     double temp = 0 ;
     
@@ -264,7 +273,7 @@ change_param() {
  * -------------------------------------------------------------------------*/
 FILE	*out_file ;
 
-run_sim() {
+void run_sim() {
     
     double	temp = 0.0, time = 0.0, min_step = 0.0, eps = 0.0, step1 = 0.0 ;
     int		num_pts = 0, v_is_defined() ;
@@ -338,14 +347,14 @@ FILE	*get_out_file() {
     printf("\n\t Enter Name of Output File, OR RETURN for screen output\n");
     printf("\n\tfilename : ");
     
-    gets( fn ) ;
+    fgets( fn, 254, stdin ) ;
     
     while ( *fp=='\t' || *fp==' ' )
         fp++ ;
     
     if ( *fp != '\0' && *fp != '\n' ) {
         if ( (ret = fopen( fp, "w") ) <= (FILE *) NULL) {
-            SysBeep( 5L );
+            //SysBeep( 5L );
             fprintf( stderr, "Can not open file : %s \n\n", fp ) ;
             ret = stdout ;
         }
@@ -368,7 +377,7 @@ FILE	*get_out_file() {
  * from the data that the user has input.
  * ------------------------------------------------------------------------*/
 
-calc_all_params() {
+void calc_all_params() {
     int i ;
     
     Roll_Diam 	= params[0].value ;
@@ -399,7 +408,7 @@ calc_all_params() {
  * -------------------------------------------------------------------------*/
 
 
-integrate( double t, int n, double step1, double hmin, double eps ) {
+void integrate( double t, int n, double step1, double hmin, double eps ) {
     
     int i, j, nbad, nok ;
     double x1, x2, ystart[NVAR+1], h1, dtsav;
@@ -455,7 +464,7 @@ integrate( double t, int n, double step1, double hmin, double eps ) {
     
 }
 
-print_header() {
+void print_header() {
     
     int i;
     extern int DANCER, cntr_type ;
@@ -472,7 +481,7 @@ print_header() {
     
     fprintf( out_file, "\n\n CONTROLLER DATA : \n"  ) ;
     
-    if ( cntr_type = PID ) {
+    if ( (cntr_type = PID) ) {
         fprintf( out_file, " Controller type :\t %s\n" , cntr_descr ) ;
         fprintf( out_file, " Controller Gain : \t%g\n" , Kp ) ;
         fprintf( out_file, " Td = \t%g\n", Td  ) ;
@@ -492,7 +501,7 @@ print_header() {
     fprintf( out_file, "\n" ) ;
 }
 
-print_data( double x, double y[], double v ) {
+void print_data( double x, double y[], double v ) {
     
     extern int DANCER ;
     double ten = 0 ;

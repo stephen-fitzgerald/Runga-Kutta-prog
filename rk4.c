@@ -1,12 +1,19 @@
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <math.h>
 #include "constants.h"
+#include "derivs.h"
+#include "front_end.h"
+
+
+int	user_quits( double t , double h);
 
 static int ERR_FLAG = 0 ;
 static char ERR_MESS[255] ;
 
-set_err_flag( int val, char *err_mess ) {
+void set_err_flag( int val, char *err_mess ) {
 	if ( val ) {
 		ERR_FLAG = TRUE ;
 		strcpy( ERR_MESS, err_mess ) ;
@@ -28,7 +35,7 @@ char *error_mess(){
 void nrerror( char *text ){
 	fprintf( stderr, "\n %s \n", text ) ;
 	fprintf( stderr, "\n In short, YOU'RE FUCKED !!\n\n\n I QUIT !!" ) ;
-	ExitToShell();
+	exit(1);
 }
 
 /*----------------------------------------------------
@@ -49,12 +56,10 @@ double yscal_vals[] = { .001,.1,.01,1,.01,.01,.01,1,.01,1,.01,.0005,.01 } ;
 	from : 'Numerical Recipes in C'
 -------------------------------------------------------------------------*/
 
-rk4 ( double y[], double dydx[], int nvar, double x, double h, double yout[] ) {
+void rk4 ( double y[], double dydx[], int nvar, double x, double h, double yout[] ) {
     
 	int 	i;
 	double 	xh, hh, h6, dym[NVAR+2], dyt[NVAR+2], yt[NVAR+2] ;
-	void derivs() ;
-	double  Vsource() ;
 		
 	hh = h * 0.5 ;
 	h6 = h / 6.0 ;
@@ -100,9 +105,6 @@ void rkqc( double y[], double dydx[], int n, double *x, double htry, double eps,
 	int 	i, last_try = 0 ;
 	double	xsav, hh, h, temp, errmax ;
 	double	dysav[NVAR+2], ysav[NVAR+2], ytemp[NVAR+2] ;
-	void	nrerror() ;
-	void    derivs() ;
-	double  Vsource() ;
 
 	D( printf("Enter rkqc() \n"); )
 	D( printf("\t x = %10.4e \n", *x );)
@@ -222,10 +224,7 @@ void	odeint( double ystart[], int nvar, double x1, double x2, double eps, double
 	int 	nstp, i ;
 	double 	xsav, x, hnext, hdid, h ;
 	double	yscal[NVAR+2], y[NVAR+2], dydx[NVAR+2] ;
-	void	nrerror() ;
-	void    derivs() ;
-	double  Vsource() ;
-	extern double BrkTrq, Brk_Trq() ;
+	double BrkTrq;
 	
 	
 	D( printf("Enter odeint() \n");)
@@ -339,7 +338,7 @@ int	user_quits( double t , double h){
 	char c[255] ;
 	register int ret = 0, i = 0;
 	
-	if ( Button() ) {
+	if ( TRUE ) {
 		printf( "\n\n\n\tCurrent time is : %g \n", t ) ;
 		printf( "\n\tCurrent step size is : %g \n\n \tDo You Want to QUIT ? : (y/n) ", h ) ;
 		c[0] = getchar() ;

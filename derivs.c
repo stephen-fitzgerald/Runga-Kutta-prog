@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 #include"parse.h"
 #include "constants.h"
-#include <string.h>
+#include "rk4.h"
+#include "front_end.h"
 
 
 extern double  Roll_Diam 	 ;     /* Initial diameter of roll           */
@@ -113,7 +115,7 @@ int	instl_dflt_V()
         V_tree = tree ;
         tree = NULL ;
     }
-    
+    return(1);
 }
 
 /*---------------------=--------------------------------
@@ -176,7 +178,7 @@ int get_vel_func() {
     if ( p_err ) {
         printf("%s", p_err_mess ) ;
         printf("Press RETURN to go on...\n\n") ;
-        gets( buf ) ;
+        fgets( buf, 254, stdin ) ;
         get_vel_func() ;
         return(0) ;
     }
@@ -186,7 +188,7 @@ int get_vel_func() {
         tree = NULL ;
         strcpy( V_func, buf ) ;
     }
-    
+    return(1);
 }
 
 
@@ -261,7 +263,7 @@ int change_pid() {
     char 	*str, *str2 ;
     int 	ok, done = FALSE ;
     int 	choice = 0 ;
-    double 	temp = 0.0, get_double() ;
+    double 	temp = 0.0 ;
     
     while ( !done ) {
         
